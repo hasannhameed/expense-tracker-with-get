@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+</head>
+
+<body>
+    <form id="formm" onsubmit="handleFormSubmit(event)">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" />
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" />
+        <label for="phone">Phone No</label>
+        <input type="tel" name="phone" id="phone" />
+        <button type="submit">Submit</button>
+
+    </form>
+    <ul id="userList"></ul>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.7/axios.min.js"></script>
+    <script>
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const username = event.target.username.value;
+            const email = event.target.email.value;
+            const phone = event.target.phone.value;
+
+            // Create user object
+            const user = {
+                username,
+                email,
+                phone
+            };
+
+            //posting elements 
+            axios.post('https://crudcrud.com/api/e53a95c0d44b4d4ab6f6cf581fe39456')
+                .then((response) => {
+                    showScreen(response.user);
+                    console.log(user);
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+
+            //getting elements 
+            axios.get('https://crudcrud.com/api/e53a95c0d44b4d4ab6f6cf581fe39456')
+                .then((response) => {
+                    showScreen(response);
+                    console.log(response);
+                    for (var i = 0; i < response.data.length; i++) {
+                        showScreen(response.data);
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+
+            const elementIdToDelete = document.getElementById("formm");
+            axios.delete(`https://crudcrud.com/api/e53a95c0d44b4d4ab6f6cf581fe39456${elementIdToDelete}`)
+                .then((response) => {
+                    console.log(`Element with ID ${elementIdToDelete} deleted successfully`);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+
+            // Store the user details in local storage with the key "User Details"
+            localStorage.setItem(user.email, JSON.stringify(user));
+
+            // Show the screen with the updated user details
+            showScreen(user);
+            resetForm();
+
+        }
+
+        function showScreen(user) {
+            const parentEle = document.querySelector("ul"); // Assuming the <ul> is the parent element
+            const childEle = document.createElement('li');
+            childEle.textContent = user.username + ' - ' + user.email + ' - ' + user.phone;
+
+            const deleteButton = document.createElement('button');
+            deleteButton.type = "button";
+            deleteButton.textContent = "Delete";
+            deleteButton.onclick = () => {
+                localStorage.removeItem(user.email);
+                parentEle.removeChild(childEle);
+            };
+
+            const editButton = document.createElement('button');
+            editButton.type = "button";
+            editButton.textContent = "Edit";
+            editButton.onclick = () => {
+                localStorage.removeItem(user.email);
+                parentEle.removeChild(childEle);
+                populateForm(user);
+            };
+            window.addEventListener("DOMContentLoaded", () => {
+                axios.get('https://crudcrud.com/api/e53a95c0d44b4d4ab6f6cf581fe39456/oppose')
+                    .then((response) => {
+                        console.log(response);
+                        for (let i = 0; i < response.data.length; i++) {
+                            showscreen(response.data[i]);
+                        }
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            });
+
+            childEle.appendChild(deleteButton);
+            childEle.appendChild(editButton);
+            parentEle.appendChild(childEle);
+        }
+
+        function populateForm(user) {
+            // Populate the input fields with existing values
+            const form = document.forms['form'];
+            form.username.value = user.username;
+            form.email.value = user.email;
+            form.phone.value = user.phone;
+        }
+        function resetForm() {
+            document.getElementById('username').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('phone').value = '';
+            // document.getElementById('editIndex').value = '';
+            // document.getElementById('addButton').innerHTML = 'Add Expense';
+        }
+
+        handleFormSubmit();
+        //  module.exports =
+
+    </script>
+</body>
+
+</html>
